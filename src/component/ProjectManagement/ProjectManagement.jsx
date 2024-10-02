@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import TaskBoard from './TaskBoard';
 
 const ProjectManagement = () => {
   const [projects, setProjects] = useState([]);
@@ -44,18 +43,65 @@ const[userName,setUserName] = useState('')
     fetchUsers();
   }, []);
 
-  const handleProjectCreation =  (e) => {
+  const handleProjectCreation = async (e) => {
     e.preventDefault();
-    alert("clicked")
+  
+    // Client-side validation: Check if all necessary fields are filled
+    if (!taskName.trim()) {
+      alert('Please enter the task name');
+      return;
+    }
+    
+    if (!givenProject.trim()) {
+      alert('Please select a project');
+      return;
+    }
+    
+    if (!userName.trim()) {
+      alert('Please select a user');
+      return;
+    }
+  
     const projectData = {
-      taskName,
-      givenProject,
-      userName,}
-
-      console.log(projectData.givenProject, projectData.taskName, projectData.userName)}
+     employee: userName,
+     email: 'user123@gmail.com',
+     isLoggedIn: true,
+     task: taskName,
+     currentProject: givenProject   
+    };
+  
+    console.log('Task Data:', projectData); // For debugging purposes
+  
+    try {
+      // Example: Submitting data to the backend
+      const response = await fetch('http://localhost:3000/taskBoards/addTask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to create task');
+      }
+  
+      const data = await response.json();
+      alert('Task successfully created!');
+  
+      // Optional: Reset the form after successful submission
+      setTaskName('');
+      setGivenProject('');
+      setUserName('');
+    } catch (error) {
+      console.error('Error creating task:', error);
+      alert('An error occurred while creating the task. Please try again.');
+    }
+  };
+  
   return (
     <>
-      <TaskBoard />
+      {/* <TaskBoard /> */}
 
       <div className="flex flex-col lg:flex-row gap-6 p-6 bg-white shadow-lg rounded-md">
         {/* Task assignment input */}
@@ -129,4 +175,4 @@ const[userName,setUserName] = useState('')
   );
 };
 
-export default ProjectManagement;
+export default ProjectManagement
