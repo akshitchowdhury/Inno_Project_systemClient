@@ -16,6 +16,23 @@ const TaskBoard = () => {
         taskBoardData();
     }, []);
 
+
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:3000/taskBoards/${id}`, {
+                method: 'DELETE',
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to delete task');
+            }
+            setTaskList(taskList.filter((task)=>task._id!=id))
+            alert('Task deleted successfully');
+            // window.location.reload();
+        } catch (error) {
+            
+        }
+    }
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold text-center mb-6">Task Board</h1>
@@ -47,6 +64,7 @@ const TaskBoard = () => {
                                     >
                                         {task.isLoggedIn ? 'Online' : 'Offline'}
                                     </span>
+                                    <button onClick={()=>handleDelete(task._id)} className='text-red-600'> Delete</button>
                                 </td>
                             </tr>
                         ))}
