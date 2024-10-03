@@ -14,25 +14,37 @@ const TaskBoard = () => {
 
     useEffect(() => {
         taskBoardData();
-    }, []);
+    }, [taskList]);
 
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/taskBoards/${id}`, {
-                method: 'DELETE',
-            })
+          const response = await fetch(`http://localhost:3000/taskBoards/${id}`, {
+            method: "DELETE",
+          });
+      
+          // Check if the response status is not OK (e.g., not 2xx)
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to delete the task');
+          }
+      
+          const data = await response.json();
+      
+          // Update the state with the filtered task list
+          setTaskList(taskList.filter((task) => task._id !== id));
+          
 
-            if (!response.ok) {
-                throw new Error('Failed to delete task');
-            }
-            setTaskList(taskList.filter((task)=>task._id!=id))
-            alert('Task deleted successfully');
-            // window.location.reload();
+          alert("Task Deleted Successfully");
+        //   taskBoardData()
+          
         } catch (error) {
-            
+          console.error("Error deleting task:", error.message);
+          alert("Failed to delete the task. Please try again.");
         }
-    }
+      };
+      
+    
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold text-center mb-6">Task Board</h1>

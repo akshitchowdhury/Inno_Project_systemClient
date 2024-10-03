@@ -59,7 +59,7 @@ const Users = () => {
                   <p className="text-sm text-gray-500">Role: {user.role || 'N/A'}</p>
                   <p className="text-sm text-gray-500">Password: {user.password}</p>
                   <p className="text-sm text-gray-500">Department: {user.department || 'N/A'}</p>
-                  {user.projectIds.length > 0 ? (
+                  {/* {user.projectIds.length > 0 ? (
                     <div className="mt-4">
                       <p className="font-semibold">Projects:</p>
                       {user.projectIds.map((project) => (
@@ -70,7 +70,7 @@ const Users = () => {
                     </div>
                   ) : (
                     <p className="text-sm text-red-500">No projects found</p>
-                  )}
+                  )} */}
                 </div>
                 <button
                   onClick={() => handleDeletion(user._id)}
