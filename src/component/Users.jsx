@@ -85,8 +85,9 @@ const Users = () => {
           <p className="text-center text-lg font-semibold text-gray-700">No users found</p>
         )}
       </div>
+    
+      <CreateUsers/>
     </div>
-    <CreateUsers/>
     </>
   );
 };
