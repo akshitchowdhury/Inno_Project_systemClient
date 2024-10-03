@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const TaskBoard = () => {
     const [taskList, setTaskList] = useState([]);
-
+    const[users,setUsers] = useState([])
     const taskBoardData = async () => {
         const response = await fetch('http://localhost:3000/taskBoards/getTasks', {
             method: 'GET',
@@ -11,9 +11,17 @@ const TaskBoard = () => {
         console.log(data);
         setTaskList(data);
     };
-
+const fetchUsers = async () => {
+    const response = await fetch('http://localhost:3000/users', {
+        method: 'GET',
+    });
+    const data = await response.json();
+    console.log(data);
+    setUsers(data);
+}
     useEffect(() => {
         taskBoardData();
+        fetchUsers();
     }, [taskList]);
 
 
@@ -65,7 +73,13 @@ const TaskBoard = () => {
                             <tr key={task._id} className="border-b hover:bg-gray-50 transition-colors">
                                 <td className="py-3 px-6">{index + 1}</td>
                                 <td className="py-3 px-6">{task.employee}</td>
-                                <td className="py-3 px-6">{task.email}</td>
+                                
+                                {
+                                    users.map((user,index)=>(
+                                       task.employee === user.username && 
+                                       <td key={index} className="py-3 px-6">{user.email}</td>
+                                    ))
+                                }
                                 <td className="py-3 px-6">{task.task}</td>
                                 <td className="py-3 px-6">{task.currentProject}</td>
                                 <td className="py-3 px-6">
