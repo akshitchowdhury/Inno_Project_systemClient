@@ -10,7 +10,7 @@ const [givenProject, setGivenProject] = useState('')
 const[userName,setUserName] = useState('')
   const fetchProjects = async () => {
     try {
-      const response = await fetch('http://localhost:3000/projects/fetchProjects', {
+      const response = await fetch('/projects/fetchProjects', {
         method: 'GET',
       });
       if (!response.ok) {
@@ -25,7 +25,7 @@ const[userName,setUserName] = useState('')
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users', {
+      const response = await fetch('/users', {
         method: 'GET',
       });
       if (!response.ok) {
@@ -74,7 +74,7 @@ const[userName,setUserName] = useState('')
   
     try {
       // Example: Submitting data to the backend
-      const response = await fetch('http://localhost:3000/taskBoards/addTask', {
+      const response = await fetch('/taskBoards/addTask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

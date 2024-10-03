@@ -9,7 +9,7 @@ const CreateProjects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('http://localhost:3000/projects/fetchProjects', {
+      const response = await fetch('/projects/fetchProjects', {
         method: 'GET',
       });
       if (!response.ok) {
@@ -33,7 +33,7 @@ const CreateProjects = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/projects/addProject', {
+      const response = await fetch('/projects/addProject', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const CreateProjects = () => {
 
   const handleDeletion = async(id)=> {
     try {
-      const response = await fetch(`http://localhost:3000/projects/delProject/${id}`,
+      const response = await fetch(`/projects/delProject/${id}`,
         {method: "DELETE"}
       )
       if(!response.ok){

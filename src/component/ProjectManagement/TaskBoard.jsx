@@ -5,7 +5,7 @@ const TaskBoard = () => {
     const [users, setUsers] = useState([]);
     
     const taskBoardData = async () => {
-        const response = await fetch('http://localhost:3000/taskBoards/getTasks', {
+        const response = await fetch('/taskBoards/getTasks', {
             method: 'GET',
         });
         const data = await response.json();
@@ -13,7 +13,7 @@ const TaskBoard = () => {
     };
 
     const fetchUsers = async () => {
-        const response = await fetch('http://localhost:3000/users', {
+        const response = await fetch('/users', {
             method: 'GET',
         });
         const data = await response.json();
@@ -28,7 +28,7 @@ const TaskBoard = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/taskBoards/${id}`, {
+            const response = await fetch(`/taskBoards/${id}`, {
                 method: 'DELETE',
             });
 
@@ -77,10 +77,10 @@ const TaskBoard = () => {
                                     <td className="py-3 px-6">
                                         <span
                                             className={`px-3 py-1 rounded-full text-sm ${
-                                                task.isLoggedIn ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                                              user && user.isLoggedIn ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                                             }`}
                                         >
-                                            {task.isLoggedIn ? 'Online' : 'Offline'}
+                                            {user && user.isLoggedIn ? 'Online' : 'Offline'}
                                         </span>
                                     </td>
                                     <td className="py-3 px-6">
