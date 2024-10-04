@@ -11,6 +11,7 @@ import CreateProjects from './component/Projects/CreateProjects'
 import Nav from './component/NavBar/Nav'
 import ProjectManagement from './component/ProjectManagement/ProjectManagement'
 import TaskPage from './component/ProjectManagement/TaskPage'
+import SendMail from './component/Mail/SendMail'
 function App() {
 
   return (
@@ -22,6 +23,7 @@ function App() {
     <Route path='/' element={<Home/>}/>
     <Route path='/userlist' element={<Users/>}/>
     <Route path='/taskManage' element={<TaskPage/>}/>
+    <Route path='/messageBoard' element={<SendMail/>}/>
     <Route path='/projectList' element={<CreateProjects/>}/>
 
   </Routes>

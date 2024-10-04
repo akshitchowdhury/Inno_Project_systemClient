@@ -33,7 +33,7 @@ const CreateUsers = () => {
     }
     const submitData = async () => {
       try {
-        const data = await fetch('http://localhost:3000/users/addUsers', {
+        const data = await fetch('/users/addUsers', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json', 
