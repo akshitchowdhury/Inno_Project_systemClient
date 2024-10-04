@@ -38,7 +38,9 @@ const SendMail = () => {
         
         
         const data = { 
-           username: chosenUser,message: message };
+            sender_email: "parameshp@innotech.co", 
+            receiver_username: chosenUser, 
+            messages: [message] };
 
         try {
             const sendData = await fetch('/messages/sendMessage', {

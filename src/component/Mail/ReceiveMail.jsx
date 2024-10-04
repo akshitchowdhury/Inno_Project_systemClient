@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 const ReceiveMail = () => {
     const [mails, setMails] = useState([]);
+    const [replyIndex, setReplyIndex] = useState(null); // Track which reply box is opened
+    const [reply, setReply] = useState('');
 
     const fetchEmail = async () => {
         try {
@@ -37,6 +39,61 @@ const ReceiveMail = () => {
         }
     };
 
+    const handleReply = async (mail) => {
+        // Send reply if the reply text is not empty
+        if (reply.trim() === '') return;
+        const username = mail.receiver_username
+        const replyData = {
+            sender_email: 'parameshp@innotech.co',
+           receiver_username: username,
+           messages: [reply],
+        };
+        try {
+            const response = await fetch('/messages/sendMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(replyData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to reply');
+            }
+            const data = await response.json();
+            alert('Message sent successfully');
+            setReply(''); // Clear the reply input after sending
+            setReplyIndex(null); // Close the reply box
+        } catch (error) {
+            console.error('Error replying:', error);
+        }
+    };
+
+    const handleDeleteOne = async (id) => {
+        try {
+            const response = await fetch(`/messages/${id}`, {
+                method: 'DELETE',
+            });
+    
+            // Check for response status before parsing JSON
+            if (!response.ok) {
+                throw new Error('Failed to delete email');
+            }
+    
+            const data = await response.json(); // Parse JSON after checking response
+    
+            // Only update mails if the response is successful
+            setMails((prevMails) => prevMails.filter((mail) => mail._id !== id));
+            
+            // Alert after the state update
+            alert('Message deleted successfully');
+        } catch (error) {
+            console.error('Error deleting email:', error);
+            alert('Error deleting email: ' + error.message); // Optional: Show error message to user
+        }
+    };
+    
+
     useEffect(() => {
         fetchEmail();
     }, []);
@@ -59,6 +116,7 @@ const ReceiveMail = () => {
                                 <th className="py-2 px-4 border-b">Receiver</th>
                                 <th className="py-2 px-4 border-b">Message</th>
                                 <th className="py-2 px-4 border-b">Actions</th>
+                                <th className="py-2 px-4 border-b"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,8 +128,33 @@ const ReceiveMail = () => {
                                         {mail.messages.length > 0 ? mail.messages[0] : "No message"}
                                     </td>
                                     <td className="py-2 px-4 border-b">
-                                        {/* Add any actions here, e.g., Reply, Delete */}
-                                        <button className="text-blue-500 hover:underline">Reply</button>
+                                        <button
+                                            onClick={() => setReplyIndex(replyIndex === index ? null : index)}
+                                            className="text-blue-500 hover:underline"
+                                        >
+                                            Reply
+                                        </button>
+                                        {replyIndex === index && (
+                                            <div>
+                                                <textarea
+                                                    value={reply}
+                                                    onChange={(e) => setReply(e.target.value)}
+                                                    className="border border-gray-300 p-2 mt-2 w-full"
+                                                    placeholder="Enter your reply here"
+                                                ></textarea>
+                                                <button
+                                                    onClick={() => handleReply(mail)}
+                                                    className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-md"
+                                                >
+                                                    Send Reply
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <button onClick={()=>handleDeleteOne(mail._id)}>
+                                            Delete Message
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
