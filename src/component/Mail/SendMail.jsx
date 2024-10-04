@@ -54,12 +54,13 @@ const SendMail = () => {
             }
 
             const response = await sendData.json();
-            setSuccess(`Message sent successfully to ${chosenUser}!`); // Set success message
+            setSuccess(`Message sent successfully to ${chosenUser}!`);
+             // Set success message
             alert(`Message sent successfully!`); // Set success message
             setMessage('');
             setChosenUser(null);
             setError(null);
-            navigate('/messageBoard'); // Clear error if submission is successful
+            navigate('/sendMail'); // Clear error if submission is successful
         } catch (error) {
             console.error('Error sending message:', error);
             setError(error.message); // Set error message

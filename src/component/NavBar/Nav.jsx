@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  
   return (
     <nav className="bg-gray-800 p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -73,14 +73,32 @@ const Nav = () => {
                 Project List
               </Link>
             </li>
-            <li>
-              <Link
-                to="/messageBoard"
-                className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block"
-              >
-                Check Mail
-              </Link>
-            </li>
+            <li
+      className="relative group"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <span className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block cursor-pointer">
+        Mail
+      </span>
+
+      {isOpen && (
+        <div className="absolute -left-24 bg-gray-700 text-gray-200 py-2 rounded-lg shadow-lg w-40">
+          <Link
+            to="/receiveMail"
+            className="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+          >
+            Check Mail
+          </Link>
+          <Link
+            to="/sendMail"
+            className="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+          >
+            Send Mail
+          </Link>
+        </div>
+      )}
+    </li>
           </ul>
         </div>
       </div>
