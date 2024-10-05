@@ -7,7 +7,7 @@ const SendMail = () => {
     const [chosenUser, setChosenUser] = useState(null);
     const [error, setError] = useState(null); // Error state for handling fetch errors
     const [success, setSuccess] = useState(null); // State to handle success messages
-    
+    const[toggleRecipient,setToggleRecipient] = useState(false)
     const navigate =useNavigate()
     const fetchUsers = async () => {
         try {
@@ -79,9 +79,11 @@ const SendMail = () => {
             {error && <div className="text-red-500 mb-4">{error}</div>} {/* Display error messages */}
             {success && <div className="text-green-500 mb-4">{success}</div>} {/* Display success messages */}
             <form onSubmit={handleSubmission} className='flex flex-col gap-4'>
-                <div className="font-medium">Select Recipient:</div>
+                <div className={`font-medium p-2 cursor-pointer 
+                 text-xl border-2
+                ${toggleRecipient ? 'border-green-500' : 'border-red-500'} rounded-md w-1/2`}  onClick={() => setToggleRecipient(!toggleRecipient)}>Select Recipient:</div>
                 {
-                    users.map((user) => (
+                  toggleRecipient &&  users.map((user) => (
                         <div key={user._id} className="flex items-center">
                             <input 
                                 type='checkbox' 
@@ -98,7 +100,7 @@ const SendMail = () => {
                 <textarea 
                     className='p-4 border-2 border-gray-600 rounded-md resize-none' 
                     rows="4"
-                    placeholder='Enter your message' 
+                    placeholder= {`Send message to ${chosenUser}`} 
                     onChange={(e) => setMessage(e.target.value)} 
                     value={message} // Controlled component
                 />

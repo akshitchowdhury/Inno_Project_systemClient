@@ -4,7 +4,8 @@ const ReceiveMail = () => {
     const [mails, setMails] = useState([]);
     const [replyIndex, setReplyIndex] = useState(null); // Track which reply box is opened
     const [reply, setReply] = useState('');
-
+    const[users,setUsers]= useState([])
+    let confrimedUSer = ''
     const fetchEmail = async () => {
         try {
             const response = await fetch('/messages/getMessages', {
@@ -21,6 +22,22 @@ const ReceiveMail = () => {
             console.error('Error fetching emails:', error);
         }
     };
+
+    const fetchUsers = async()=>{
+        try {
+            const response = await fetch('/users', {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }   
+            const data= await response.json();
+            setUsers(data);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    }
 
     const handleDelete = async () => {
         try {
@@ -39,10 +56,10 @@ const ReceiveMail = () => {
         }
     };
 
-    const handleReply = async (mail) => {
+    const handleReply = async (mail,empUsername) => {
         // Send reply if the reply text is not empty
         if (reply.trim() === '') return;
-        const username = mail.receiver_username
+        const username = empUsername;
         const replyData = {
             sender_email: 'parameshp@innotech.co',
            receiver_username: username,
@@ -96,7 +113,8 @@ const ReceiveMail = () => {
 
     useEffect(() => {
         fetchEmail();
-    }, []);
+        fetchUsers();
+    }, [mails]);
 
     return (
         <div className="container mx-auto p-6">
@@ -120,10 +138,15 @@ const ReceiveMail = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {mails.map((mail, index) => (
+                            {mails.map((mail, index) => 
+                            {
+                                const verifiedUsers = users.find((user) => user.email === mail.sender_email);
+                                
+                                {/* setReceiver(verifiedUsers.username); */}
+                            return(
                                 <tr key={index} className="hover:bg-gray-50">
                                     <td className="py-2 px-4 border-b">{mail.sender_email}</td>
-                                    <td className="py-2 px-4 border-b">{mail.receiver_username}</td>
+                                    <td  className="py-2 px-4 border-b">{verifiedUsers?.username} <p></p></td>
                                     <td className="py-2 px-4 border-b">
                                         {mail.messages.length > 0 ? mail.messages[0] : "No message"}
                                     </td>
@@ -143,7 +166,7 @@ const ReceiveMail = () => {
                                                     placeholder="Enter your reply here"
                                                 ></textarea>
                                                 <button
-                                                    onClick={() => handleReply(mail)}
+                                                    onClick={() => handleReply(mail, verifiedUsers?.username)}
                                                     className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-md"
                                                 >
                                                     Send Reply
@@ -157,7 +180,9 @@ const ReceiveMail = () => {
                                         </button>
                                     </td>
                                 </tr>
-                            ))}
+                            )}
+                            )
+                            }
                         </tbody>
                     </table>
                 </div>
