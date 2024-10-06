@@ -13,6 +13,7 @@ import ProjectManagement from './component/ProjectManagement/ProjectManagement'
 import TaskPage from './component/ProjectManagement/TaskPage'
 import SendMail from './component/Mail/SendMail'
 import ReceiveMail from './component/Mail/ReceiveMail'
+import Attendance from './component/Attendance/Attendance'
 function App() {
 
   return (
@@ -27,6 +28,7 @@ function App() {
     <Route path='/sendMail' element={<SendMail/>}/>
     <Route path='/receiveMail' element={<ReceiveMail/>}/>
     <Route path='/projectList' element={<CreateProjects/>}/>
+    <Route path='/attendanceTracker' element={<Attendance/>}/>
 
   </Routes>
 </Router>

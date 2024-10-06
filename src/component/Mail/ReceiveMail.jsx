@@ -131,8 +131,10 @@ const ReceiveMail = () => {
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="py-2 px-4 border-b">Sender</th>
-                                <th className="py-2 px-4 border-b">Receiver</th>
+                                
                                 <th className="py-2 px-4 border-b">Message</th>
+                                <th className="py-2 px-4 border-b">Received at</th>
+
                                 <th className="py-2 px-4 border-b">Actions</th>
                                 <th className="py-2 px-4 border-b"></th>
                             </tr>
@@ -146,9 +148,28 @@ const ReceiveMail = () => {
                             return(
                                 <tr key={index} className="hover:bg-gray-50">
                                     <td className="py-2 px-4 border-b">{mail.sender_email}</td>
-                                    <td  className="py-2 px-4 border-b">{verifiedUsers?.username} <p></p></td>
+                                    {/* <td  className="py-2 px-4 border-b">{verifiedUsers?.username} <p></p></td> */}
                                     <td className="py-2 px-4 border-b">
                                         {mail.messages.length > 0 ? mail.messages[0] : "No message"}
+                                    </td>
+                                    <td>
+                                        {
+                                            (
+                                                () => {
+                                                    const date = new Date(mail.createdAt);
+      const options = {
+        timeZone: 'Asia/Kolkata', 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit',
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit'
+      };
+      return date.toLocaleDateString('en-US', options) 
+                                                }
+                                            )()
+                                        }
                                     </td>
                                     <td className="py-2 px-4 border-b">
                                         <button
