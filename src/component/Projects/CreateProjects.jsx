@@ -5,8 +5,11 @@ const CreateProjects = () => {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectDomain, setProjectDomain] = useState('');
+  const [projectClient, setProjectClient] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const[userList,setUserList] = useState([])
+  const[assignedUser,setAssignedUser] = useState('')
+  const[toggleDropdown,setToggleDropdown] = useState(false)
   const fetchProjects = async () => {
     try {
       const response = await fetch('/projects/fetchProjects', {
@@ -23,13 +26,24 @@ const CreateProjects = () => {
     }
   };
 
+  const fetchUsers = async()=>{
+    const response = await fetch("/users", {
+      method: "GET"
+    })
+    const data = await response.json()
+    
+    setUserList(data)
+  }
+
   const handleSubmission = async (e) => {
     e.preventDefault();
 
     const projectData = {
-      projectName,
-      projectDescription,
-      projectDomain,
+      projectName: projectName,
+      projectDescription: projectDescription,
+      projectDomain: projectDescription,
+      projectClient: projectClient,
+      assignedTo: assignedUser
     };
 
     try {
@@ -51,6 +65,7 @@ const CreateProjects = () => {
       setProjectName('');
       setProjectDescription('');
       setProjectDomain('');
+      setProjectClient('')
       fetchProjects(); // Refresh the project list
     } catch (error) {
       console.error('Error creating project:', error);
@@ -76,6 +91,7 @@ const CreateProjects = () => {
 
   useEffect(() => {
     fetchProjects();
+    fetchUsers()
   }, []);
 
   return (
@@ -91,6 +107,9 @@ const CreateProjects = () => {
           projects.map((project, index) => (
             <div key={index} className="bg-white shadow-lg rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-2">{project.projectName}</h2>
+              
+              <p className="text-gray-600 mb-4">Assigned to: {project.assignedTo}</p>
+              <h2 className="text-xl font-semibold mb-2">{project.projectClient}</h2>
               <p className="text-gray-600 mb-4">{project.projectDescription}</p>
               <p className="text-sm text-blue-500">Domain: {project.projectDomain}</p>
               <button onClick={()=>handleDeletion(project._id)} className='bg-red-700 p-4 rounded-md'>Delete Project</button>
@@ -107,16 +126,62 @@ const CreateProjects = () => {
         <h2 className="text-2xl font-semibold text-center mb-6">Add New Project</h2>
 
         <form onSubmit={handleSubmission}>
-          <div className="mb-4">
+          <div className="mb-4 flex flex-row gap-4">
+          <div className='flex flex-col'>
             <label className="block text-gray-600 mb-2">Project Name</label>
             <input
               type="text"
               value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
+              onChange={ e => setProjectName(e.target.value)}
               placeholder="New Project Name"
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            </div>
+            <div className='flex flex-col'>
+            <label className="block text-gray-600 mb-2">Client Name</label>
+            <input
+              type="text"
+              value={projectClient}
+              onChange={(e) => setProjectClient(e.target.value)}
+              placeholder="New Project Name"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            </div>
+          </div>
+
+          <div className="mb-4 flex flex-row gap-6">
+          <div>
+            <label className="block text-gray-600 mb-2">Project Domain</label>
+            <input
+              type="text"
+              value={projectDomain}
+              onChange={(e) => setProjectDomain(e.target.value)}
+              placeholder="e.g. Web Development"
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            </div>
+
+            <div>
+            <label onClick={()=>setToggleDropdown(!toggleDropdown)} className="cursor-pointer block text-gray-600 mb-2">Assign to</label>
+            <div className='flex flex-row'>
+            {
+            toggleDropdown&&  userList.map((user,index)=>(
+                <>
+                 <div key={user._id}> 
+            <input
+              type="checkbox"  checked={user.username===assignedUser}
+              value={user._id}
+              onChange={()=>setAssignedUser(user.username)}
+            /> <p>{user.username}</p>
+               
+               </div> </>
+              ))
+            }
+            </div>
+            </div>
           </div>
 
           <div className="mb-4">
@@ -130,17 +195,7 @@ const CreateProjects = () => {
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Project Domain</label>
-            <input
-              type="text"
-              value={projectDomain}
-              onChange={(e) => setProjectDomain(e.target.value)}
-              placeholder="e.g. Web Development"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+          
 
           <button
             type="submit"
