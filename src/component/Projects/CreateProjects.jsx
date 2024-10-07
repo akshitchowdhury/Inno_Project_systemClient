@@ -10,7 +10,8 @@ const CreateProjects = () => {
   const [userList, setUserList] = useState([]);
   const [assignedUser, setAssignedUser] = useState('');
   const [toggleDropdown, setToggleDropdown] = useState(false);
-
+  const [projectStatus, setProjectStatus] = useState(false)
+  // const[statusIndex,setStatusIndex] = useState(null)
   const fetchProjects = async () => {
     try {
       const response = await fetch('/projects/fetchProjects', {
@@ -43,7 +44,8 @@ const CreateProjects = () => {
       projectDescription,
       projectDomain,
       projectClient,
-      assignedTo: assignedUser
+      assignedTo: assignedUser,
+      projectStatus: projectStatus
     };
 
     try {
@@ -85,6 +87,35 @@ const CreateProjects = () => {
     }
   };
 
+  const handleStatusToggle = async (id, currentStatus) => {
+    const updatedStatus = !currentStatus; // Toggle the current status
+
+    try {
+      const response = await fetch(`/projects/updateStatus/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ projectStatus: updatedStatus }), // Send the toggled status
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update project status");
+      }
+
+      const data = await response.json();
+
+      // Update the local state to reflect the status change
+      setProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project._id === id ? { ...project, projectStatus: updatedStatus } : project
+        )
+      );
+    } catch (error) {
+      console.error("Error updating project status:", error);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
     fetchUsers();
@@ -107,6 +138,7 @@ const CreateProjects = () => {
                 <th className="py-2 px-4">Assigned To</th>
                 <th className="py-2 px-4">Domain</th>
                 <th className="py-2 px-4">Description</th>
+                <th className="py-2 px-4">Project Status</th>
                 <th className="py-2 px-4">Actions</th>
               </tr>
             </thead>
@@ -118,7 +150,16 @@ const CreateProjects = () => {
                   <td className="py-2 px-4">{project.projectClient}</td>
                   <td className="py-2 px-4">{project.assignedTo}</td>
                   <td className="py-2 px-4">{project.projectDomain}</td>
+
                   <td className="py-2 px-4">{project.projectDescription}</td>
+
+
+                  <td
+                    onClick={() => handleStatusToggle(project._id, project.projectStatus)}
+                    className="py-2 px-4 cursor-pointer"
+                  >
+                    {!project.projectStatus ? <span className='bg-yellow-300 text-lg font-medium text-white p-2 rounded-md'>Ongoing</span> : <span className='bg-green-500 p-2 text-lg font-medium rounded-md'>Completed</span>}
+                  </td>
                   <td className="py-2 px-4 text-center">
                     <button onClick={() => handleDeletion(project._id)} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
                       Delete
