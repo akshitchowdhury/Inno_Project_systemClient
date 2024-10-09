@@ -93,16 +93,19 @@ const TaskBoard = () => {
                                         </span>
                                     </td>
                                     <td className="py-3 px-6">
-                                        <span
-                                            className={`px-3 py-1 w-auto rounded-full text-sm ${user && user.isPresent ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-                                                }`}
-                                        >
-                                            {user&& !user.isLoggedIn && user.isPresent
+                                    <span
+    className={`px-3 py-1 w-auto rounded-full text-sm ${user && (user.isPresent === 'Off Duty' || user.isPresent === 'Leave') ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}
+>
+
+                                            {/* {user&& !user.isLoggedIn && user.isPresent
                                                 ? 'Off duty'
                                                 : (user && user.isLoggedIn && user.isPresent
                                                     ? 'WFO'
                                                     : 'On Leave'
                                                 )
+                                            } */}
+                                            {
+                                                user && user.isPresent
                                             }
 
                                         </span>
