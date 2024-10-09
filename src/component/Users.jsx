@@ -35,7 +35,7 @@ const Users = () => {
       setProjectList(data);
     } catch (error) {
       console.error('Error fetching projects:', error);
-      setErrorMessage('Could not load projects. Please try again.');
+      // setErrorMessage('Could not load projects. Please try again.');
     }
   };
 
@@ -80,7 +80,22 @@ const Users = () => {
           <p className="text-sm text-gray-500">Role: {user.role || 'N/A'}</p>
           <p className="text-sm text-gray-500">Password: {user.password}</p>
           <p className="text-sm text-gray-500">Log in Status : {user.isLoggedIn ? <span>Online</span>: <span>Offline</span>}</p>
-          {/* <p className="text-sm text-gray-500">USER ID: INNO{user._id.slice(user._id.length - 4, user._id.length)}</p> */}
+          {/* <p className="text-sm text-gray-500">Employee is: { user.isPresent?.WFH || user.isPresent?.WFO ? <span>Working from  </span>: <span>Not Present</span>}</p> */}
+          
+          {/* {!user.isLoggedIn && user.isPresent ? (<p className="text-sm text-gray-500">Employee is: <span>Off duty</span></p>)
+            :user.isLoggedIn && user.isPresent?.WFO? (<p className="text-sm text-gray-500">Employee is: <span>Working from Office</span></p>)
+            :user.isPresent?.WFH ? (<p className="text-sm text-gray-500">Employee is: <span>Working from Home</span></p>)
+            : (<p className="text-sm text-gray-500">Employee is: <span>On Leave</span></p>
+            ) 
+          }
+           */}
+            {
+              user && !user.isLoggedIn ? (<p className="text-sm text-gray-500">Employee is: <span>Off Duty</span></p>)
+              : (<p className="text-sm text-gray-500">Employee is: <span> {user.isPresent==='WFO'? 'Working from Office' : 'Working from Home'}</span></p>)
+            }
+           {/* <p className="text-sm text-gray-500">Employee is: <span>{user && user.isPresent}</span></p> */}
+
+          <p className="text-sm text-gray-500">USER ID: {user.empId}</p>
           
           <p className="text-sm text-gray-500">Assigned Project: {userProject ? userProject.projectName : 'N/A'}</p>
           <p className="text-sm text-gray-500">Department: {user.department || 'N/A'}</p>

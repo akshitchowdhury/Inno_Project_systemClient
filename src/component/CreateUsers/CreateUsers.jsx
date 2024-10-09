@@ -5,10 +5,13 @@ const CreateUsers = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [department, setDepartment] = useState('');
+  
   // const [project, setProject] = useState('');
   // const [projectDescription, setProjectDescription] = useState('');
   const [error, setError] = useState('');
-
+  // const WFO = true;
+  // const WFH = false;
+  // const Leave = false;
   const handleSubmission = (e) => {
     e.preventDefault();
   
@@ -24,12 +27,17 @@ const CreateUsers = () => {
     //   projectName : project,
     //   projectDescription : projectDescription
     // }
-  
+    
+    const empId = `INNO${Math.floor(1000+Math.random()*90)}` 
+    // const isPresent = {WFO , WFH, Leave};
+    const isPresent = 'Off Duty'
     const user = {
       username : username,
       email : email,
       password: password,
-      department: department
+      department: department,
+      empId: empId,
+      isPresent: isPresent
     }
     const submitData = async () => {
       try {

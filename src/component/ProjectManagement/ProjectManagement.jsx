@@ -150,7 +150,7 @@ const[userName,setUserName] = useState('')
             </div>
             {userToggleList && (
               <div className="mt-2 max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-md p-2">
-                {users.map((user) => (
+                {users.filter((user)=>user.username!=="ADMIN").map((user) => (
                   <div key={user._id} className="flex items-center gap-2 p-2">
                   <input type="checkbox" value={user.username}
                     onChange={(e) => setUserName(e.target.value)} className="h-4 w-4 text-amber-600" />

@@ -83,7 +83,7 @@ const SendMail = () => {
                  text-xl border-2
                 ${toggleRecipient ? 'border-green-500' : 'border-red-500'} rounded-md w-1/2`}  onClick={() => setToggleRecipient(!toggleRecipient)}>Select Recipient:</div>
                 {
-                  toggleRecipient &&  users.map((user) => (
+                  toggleRecipient &&  users.filter((user) => user.username !== "ADMIN").map((user) => (
                         <div key={user._id} className="flex items-center">
                             <input 
                                 type='checkbox' 
