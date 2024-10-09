@@ -90,8 +90,8 @@ const Users = () => {
           }
            */}
             {
-              user && !user.isLoggedIn ? (<p className="text-sm text-gray-500">Employee is: <span>Off Duty</span></p>)
-              : (<p className="text-sm text-gray-500">Employee is: <span> {user.isPresent==='WFO'? 'Working from Office' : 'Working from Home'}</span></p>)
+              user && !user.isLoggedIn && user.isPresent==='Leave' ? (<p className="text-sm text-gray-500">Employee is: <span>On Leave </span></p>)
+              : (<p className="text-sm text-gray-500">Employee Work mode: {user.isPresent}</p>)
             }
            {/* <p className="text-sm text-gray-500">Employee is: <span>{user && user.isPresent}</span></p> */}
 
