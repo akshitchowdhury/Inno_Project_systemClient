@@ -33,7 +33,8 @@ const Attendance = () => {
         <tbody>
           {userList.map((user) => {
             // Access the user's login date from the createdAt field
-            const userCreatedAt = new Date(user.createdAt);
+            const userCreatedAt = new Date(user.loggedInAt);
+        
             const userLoginDate = userCreatedAt.getDate(); // Get the day of the month
 
             return (

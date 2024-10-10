@@ -69,7 +69,7 @@ const Users = () => {
   useEffect(() => {
     fetchUsers();
     fetchProjects();
-  }, []);
+  }, [userList]);
 
   const handleOpenDialog = (user) => {
     setSelectedUser(user);
