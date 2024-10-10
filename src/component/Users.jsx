@@ -80,6 +80,32 @@ const Users = () => {
           <p className="text-sm text-gray-500">Role: {user.role || 'N/A'}</p>
           <p className="text-sm text-gray-500">Password: {user.password}</p>
           <p className="text-sm text-gray-500">Log in Status : {user.isLoggedIn ? <span>Online</span>: <span>Offline</span>}</p>
+          <p className="text-sm text-gray-500">
+  Time of Log In: {new Date(user.loggedInAt).toLocaleString('en-GB', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  })}
+</p>
+          <p className="text-sm text-gray-500">
+  Time of Log Out: {new Date(user.loggedOutAt).toLocaleString('en-GB', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  })}
+</p>
+
+          
           {/* <p className="text-sm text-gray-500">Employee is: { user.isPresent?.WFH || user.isPresent?.WFO ? <span>Working from  </span>: <span>Not Present</span>}</p> */}
           
           {/* {!user.isLoggedIn && user.isPresent ? (<p className="text-sm text-gray-500">Employee is: <span>Off duty</span></p>)
