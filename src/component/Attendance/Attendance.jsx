@@ -1,85 +1,56 @@
-import React, { useState } from 'react';
-import ThirtyDay from './ThirtyDay';
-import ThirtyOne from './ThirtyOne';
-import Feb from './Feb';
+import React, { useEffect, useState } from "react";
 
 const Attendance = () => {
-    const monthGrid = new Array(31);
-    const thirtyGrid = new Array(30);
-    const FebGrid = new Array(27);
-    const date = new Date();
-    const options = {
-        timeZone: 'Asia/Kolkata', 
-        year: 'numeric', 
-        month: '2-digit', 
-        day: '2-digit',
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit'
-      }; 
-      
-    const todayDate = date.toLocaleString('en-US', options).slice(4,5);
-    const [refresh, setRefrsh] = useState(false);
-    const [selectedMonthType, setSelectedMonthType] = useState('31-Day Month'); // Default selection
-    const[toggleList,setToggleList] = useState(false)
-    const monthTypes = [
-        { name: '30-Day Month',
-             component: <ThirtyDay todayDate={todayDate} thirtyGrid={thirtyGrid} options={options} date={date}/> },
-        { name: '31-Day Month', 
-            component: <ThirtyOne refresh={refresh} setRefrsh={setRefrsh} todayDate={todayDate} monthGrid={monthGrid} options={options} date={date}/> },
-        { name: 'February',
-             component: <Feb todayDate={todayDate} FebGrid={FebGrid} options={options} date={date}/> },
-    ];
+  const [userList, setUserList] = useState([]);
 
-    return (
-        <>
-            <div className='p-12'>
-                <p className='text-xl'>Track Attendance Here</p>
-                <p className='text-lg'>Select Month Type</p>
+  // Create an array for dates 1 to 30
+  const dates = Array.from({ length: 30 }, (_, i) => i + 1);
 
-                {/* Dropdown button for month types */}
-                <div className="relative inline-block text-left">
-                    <div>
-                        <button 
-                            onClick={()=>setToggleList(!toggleList)}
-                            className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                            id="options-menu" 
-                            aria-haspopup="true" 
-                            aria-expanded="true"
-                        >
-                            {selectedMonthType}
-                        </button>
-                    </div>
+  // Function to fetch users from the API
+  const fetchUsers = async () => {
+    const response = await fetch("/users"); // Update with your API endpoint
+    const data = await response.json();
+    setUserList(data);
+  };
 
-                    {
-                        toggleList && (
-                            <>
-                    <div className="origin-top-right absolute -right-56 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            {monthTypes.map((month, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedMonthType(month.name)}
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                                    role="menuitem"
-                                >
-                                    {month.name}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    </>
-                        )
-                    }
-                </div>
-            </div>
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-            {/* Render selected month type's component */}
-            <div className="mt-6">
-                {monthTypes.find(month => month.name === selectedMonthType)?.component}
-            </div>
-        </>
-    );
-}
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full table-auto border-collapse">
+        <thead>
+          <tr>
+            <th className="px-4 py-2 bg-gray-200 border">Names</th>
+            {dates.map((date) => (
+              <th key={date} className="px-4 py-2 bg-gray-200 border">
+                {date}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {userList.map((user) => {
+            // Access the user's login date from the createdAt field
+            const userCreatedAt = new Date(user.createdAt);
+            const userLoginDate = userCreatedAt.getDate(); // Get the day of the month
+
+            return (
+              <tr key={user._id} className="bg-white">
+                <td className="px-4 py-2 border">{user.username}</td>
+                {dates.map((date) => (
+                  <td key={date} className="px-4 py-2 border text-center">
+                    {userLoginDate === date ? "Present" : "Absent"}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export default Attendance;

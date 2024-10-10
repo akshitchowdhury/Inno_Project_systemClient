@@ -1,10 +1,29 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import i1 from "../assets/aboutBg2.jpg"
 import i2 from "../assets/homeBgif.gif"
 import logo from "../assets/innoLogo2.jpeg"
 import { Link } from 'react-router-dom'
 
 const Home = () => {
+  const[userList,setUserList] = useState([])
+  const fetchUsers = async()=>{
+    const response = await fetch("/users", {
+      method: "GET"
+    })
+    const data = await response.json();
+    setUserList(data);
+  }
+
+  const groupedUsers = userList.reduce((acc, user) => {
+    if (!acc[user.isPresent]) {
+      acc[user.isPresent] = [];
+    }
+    acc[user.isPresent].push(user.username);
+    return acc;
+  }, {});
+  useEffect(()=>{
+    fetchUsers()
+  },[userList])
   return (
     <div className="min-h-screen bg-gray-100">
       {/* <header className="bg-white shadow-md">
@@ -61,21 +80,68 @@ const Home = () => {
         </div>
 
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-          <ul className="space-y-2">
-            <li className="flex items-center justify-between border-b pb-2">
-              <span className="text-gray-600">New project created: AI Integration</span>
-              <span className="text-sm text-gray-400">2 hours ago</span>
-            </li>
-            <li className="flex items-center justify-between border-b pb-2">
-              <span className="text-gray-600">User report generated: Q2 Performance</span>
-              <span className="text-sm text-gray-400">Yesterday</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span className="text-gray-600">System update completed: v2.3.1</span>
-              <span className="text-sm text-gray-400">3 days ago</span>
-            </li>
-          </ul>
+          <h2 className="text-xl font-semibold mb-4">Quick Updates</h2>
+
+          {/* {
+  userList.map((user) => {
+    return (
+      <ul className="space-y-2" key={user.id}>
+        {user.isPresent === "Leave" && (
+          <li className="flex items-center justify-between border-b pb-2">
+            <span className="text-gray-600">Employee on Leave</span>
+            <span className="text-sm text-gray-400">{user.username}</span>
+          </li>
+        )}
+        {user.isPresent === "WFO" && (
+          <li className="flex items-center justify-between border-b pb-2">
+            <span className="text-gray-600">Employees Working from Office</span>
+            <span className="text-sm text-gray-400">{user.username}</span>
+          </li>
+        )}
+        {user.isPresent === "WFH" && (
+          <li className="flex items-center justify-between">
+            <span className="text-gray-600">Employees Working from Home</span>
+            <span className="text-sm text-gray-400">{user.username}</span>
+          </li>
+        )}
+      </ul>
+    );
+  })
+} */}
+<div>
+    <ul className="space-y-2">
+      {/* Employees on Leave */}
+      {groupedUsers["Leave"] && groupedUsers["Leave"].length > 0 && (
+        <li className="flex items-center justify-between border-b pb-2">
+          <span className="text-gray-600">Employees on Leave</span>
+          <span className="text-sm text-gray-400">
+            {groupedUsers["Leave"].join(", ")}
+          </span>
+        </li>
+      )}
+
+      {/* Employees Working from Office */}
+      {groupedUsers["WFO"] && groupedUsers["WFO"].length > 0 && (
+        <li className="flex items-center justify-between border-b pb-2">
+          <span className="text-gray-600">Employees Working from Office</span>
+          <span className="text-sm text-gray-400">
+            {groupedUsers["WFO"].join(", ")}
+          </span>
+        </li>
+      )}
+
+      {/* Employees Working from Home */}
+      {groupedUsers["WFH"] && groupedUsers["WFH"].length > 0 && (
+        <li className="flex items-center justify-between">
+          <span className="text-gray-600">Employees Working from Home</span>
+          <span className="text-sm text-gray-400">
+            {groupedUsers["WFH"].join(", ")}
+          </span>
+        </li>
+      )}
+    </ul>
+  </div>
+          
         </div>
       </main>
 
