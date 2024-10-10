@@ -1,134 +1,156 @@
 import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Paper,
+  Alert,
+} from '@mui/material';
+import { styled } from '@mui/system';
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  marginTop: theme.spacing(8),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: theme.spacing(4),
+}));
+
+const Form = styled('form')(({ theme }) => ({
+  width: '100%',
+  marginTop: theme.spacing(1),
+}));
+
+const SubmitButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(3, 0, 2),
+}));
 
 const CreateUsers = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [department, setDepartment] = useState('');
-  
-  // const [project, setProject] = useState('');
-  // const [projectDescription, setProjectDescription] = useState('');
   const [error, setError] = useState('');
-  // const WFO = true;
-  // const WFH = false;
-  // const Leave = false;
+
   const handleSubmission = (e) => {
     e.preventDefault();
-  
+
     if (!username || !email || !password || !department) {
       setError('All fields are required');
       return;
     }
-  
-    // const user = {
-    //   username : username,
-    //   email : email,
-    //   password: password,
-    //   projectName : project,
-    //   projectDescription : projectDescription
-    // }
-    
-    const empId = `INNO${Math.floor(1000+Math.random()*90)}` 
-    // const isPresent = {WFO , WFH, Leave};
-    const isPresent = 'Off Duty'
+
+    const empId = `INNO${Math.floor(1000 + Math.random() * 90)}`;
+    const isPresent = 'Off Duty';
     const user = {
-      username : username,
-      email : email,
-      password: password,
-      department: department,
-      empId: empId,
-      isPresent: isPresent
-    }
+      username,
+      email,
+      password,
+      department,
+      empId,
+      isPresent,
+    };
+
     const submitData = async () => {
       try {
-        const data = await fetch('/users/addUsers', {
+        const response = await fetch('/users/addUsers', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json', 
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(user),
-
         });
-  
-        if (!data.ok) {
+
+        if (!response.ok) {
           throw new Error('Failed to create user');
         }
-  
-        const response = await data.json();
+
+        await response.json();
         alert('User created successfully');
         window.location.reload();
       } catch (error) {
         setError('Error creating user. Please try again.');
       }
     };
-  
+
     submitData();
   };
-  
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-700 text-center mb-6">Create New User</h2>
+    <Container component="main" maxWidth="xs">
+      <StyledPaper elevation={6}>
+        <Typography component="h1" variant="h5">
+          Create New User
+        </Typography>
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+          <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
             {error}
-          </div>
+          </Alert>
         )}
-        <form onSubmit={handleSubmission}>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="New username"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="New email"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="New password"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Department</label>
-            <input
-              type="text"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              placeholder="New Department"
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-
-          <button
+        <Form onSubmit={handleSubmission}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="department"
+            label="Department"
+            name="department"
+            autoComplete="department"
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+          />
+          <SubmitButton
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+            fullWidth
+            variant="contained"
+            color="primary"
           >
-            Submit
-          </button>
-        </form>
-      </div>
-    </div>
+            Create User
+          </SubmitButton>
+        </Form>
+      </StyledPaper>
+    </Container>
   );
 };
 

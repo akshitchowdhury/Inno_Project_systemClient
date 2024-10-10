@@ -1,118 +1,160 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Paper,
+  Container,
+  Snackbar,
+  IconButton,
+} from '@mui/material';
+import { styled } from '@mui/system';
+import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close';
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  marginTop: theme.spacing(4),
+}));
 
 const SendMail = () => {
-    const [message, setMessage] = useState('');
-    const [users, setUsers] = useState([]);
-    const [chosenUser, setChosenUser] = useState(null);
-    const [error, setError] = useState(null); // Error state for handling fetch errors
-    const [success, setSuccess] = useState(null); // State to handle success messages
-    const[toggleRecipient,setToggleRecipient] = useState(false)
-    const navigate =useNavigate()
-    const fetchUsers = async () => {
-        try {
-            const response = await fetch('/users', {
-                method: 'GET',
-            });
+  const [message, setMessage] = useState('');
+  const [users, setUsers] = useState([]);
+  const [chosenUser, setChosenUser] = useState('');
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/users', { method: 'GET' });
+      if (!response.ok) throw new Error('Failed to fetch users');
+      const data = await response.json();
+      setUsers(data.filter(user => user.username !== "ADMIN"));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setError(error.message);
+    }
+  };
 
-            const data = await response.json();
-            setUsers(data);
-        } catch (error) {
-            console.error('Error fetching users:', error);
-            setError(error.message); // Set error message
-        }
+  const handleSubmission = async (e) => {
+    e.preventDefault();
+    if (!chosenUser) {
+      setError('Please select a recipient');
+      return;
+    }
+    if (!message.trim()) {
+      setError('Please enter a message');
+      return;
+    }
+
+    const data = { 
+      sender_email: "parameshp@innotech.co", 
+      receiver_username: chosenUser, 
+      messages: [message]
     };
 
-    const handleSubmission = async (e) => {
-        e.preventDefault();
+    try {
+      const sendData = await fetch('/messages/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-        const selectedUser = users.find((user) => user.username === chosenUser);
-        if (!selectedUser) {
-            setError('User not found');
-            return;
+      if (!sendData.ok) throw new Error('Failed to send message');
+
+      await sendData.json();
+      setSuccess(`Message sent successfully to ${chosenUser}!`);
+      setMessage('');
+      setChosenUser('');
+      setError(null);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setError(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') return;
+    setSuccess(null);
+    setError(null);
+  };
+
+  return (
+    <Container maxWidth="md">
+      <StyledPaper elevation={3}>
+        <Typography variant="h4" gutterBottom align="center">
+          Compose Message
+        </Typography>
+        <Box component="form" onSubmit={handleSubmission} sx={{ mt: 3 }}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="recipient-select-label">Recipient</InputLabel>
+            <Select
+              labelId="recipient-select-label"
+              value={chosenUser}
+              label="Recipient"
+              onChange={(e) => setChosenUser(e.target.value)}
+            >
+              {users.map((user) => (
+                <MenuItem key={user._id} value={user.username}>
+                  {user.username}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Message"
+            multiline
+            rows={6}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={`Send message to ${chosenUser || 'selected recipient'}`}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            endIcon={<SendIcon />}
+            sx={{ mt: 2 }}
+          >
+            Send Message
+          </Button>
+        </Box>
+      </StyledPaper>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={!!error || !!success}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={error || success}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleCloseSnackbar}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
         }
-        
-        
-        const data = { 
-            sender_email: "parameshp@innotech.co", 
-            receiver_username: chosenUser, 
-            messages: [message] };
-
-        try {
-            const sendData = await fetch('/messages/sendMessage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!sendData.ok) {
-                throw new Error('Failed to send message');
-            }
-
-            const response = await sendData.json();
-            setSuccess(`Message sent successfully to ${chosenUser}!`);
-             // Set success message
-            alert(`Message sent successfully!`); // Set success message
-            setMessage('');
-            setChosenUser(null);
-            setError(null);
-            navigate('/sendMail'); // Clear error if submission is successful
-        } catch (error) {
-            console.error('Error sending message:', error);
-            setError(error.message); // Set error message
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []); // Add dependency array to prevent continuous fetching
-
-    return (
-        <div className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-md mt-10">
-            <h2 className="text-lg font-semibold text-center mb-4">Send a Message</h2>
-            {error && <div className="text-red-500 mb-4">{error}</div>} {/* Display error messages */}
-            {success && <div className="text-green-500 mb-4">{success}</div>} {/* Display success messages */}
-            <form onSubmit={handleSubmission} className='flex flex-col gap-4'>
-                <div className={`font-medium p-2 cursor-pointer 
-                 text-xl border-2
-                ${toggleRecipient ? 'border-green-500' : 'border-red-500'} rounded-md w-1/2`}  onClick={() => setToggleRecipient(!toggleRecipient)}>Select Recipient:</div>
-                {
-                  toggleRecipient &&  users.filter((user) => user.username !== "ADMIN").map((user) => (
-                        <div key={user._id} className="flex items-center">
-                            <input 
-                                type='checkbox' 
-                                checked={user.username === chosenUser}
-                                value={user._id} 
-                                onChange={() => setChosenUser(user.username)} 
-                                className="mr-2"
-                            />
-                            <label>{user.username}</label>
-                        </div>
-                    ))
-                }
-
-                <textarea 
-                    className='p-4 border-2 border-gray-600 rounded-md resize-none' 
-                    rows="4"
-                    placeholder= {`Send message to ${chosenUser}`} 
-                    onChange={(e) => setMessage(e.target.value)} 
-                    value={message} // Controlled component
-                />
-                <button 
-                    type='submit' 
-                    className='p-4 bg-green-600 rounded-md text-white hover:bg-green-700 transition duration-200'
-                >
-                    Send Message
-                </button>
-            </form>
-        </div>
-    );
+      />
+    </Container>
+  );
 };
 
 export default SendMail;

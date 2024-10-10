@@ -1,116 +1,141 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Box,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import { styled } from '@mui/system';
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: '#000000',
+}));
+
+const StyledToolbar = styled(Toolbar)({
+  height: 100,
+  display: 'flex',
+  justifyContent: 'space-between',
+});
+
+const DesktopMenu = styled(Box)(({ theme }) => ({
+  display: 'none',
+  [theme.breakpoints.up('md')]: {
+    display: 'flex',
+  },
+}));
+
+const MobileMenuButton = styled(IconButton)(({ theme }) => ({
+  display: 'flex',
+  [theme.breakpoints.up('md')]: {
+    display: 'none',
+  },
+}));
 
 const Nav = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mailMenuAnchor, setMailMenuAnchor] = useState(null);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleMailMenuOpen = (event) => {
+    setMailMenuAnchor(event.currentTarget);
+  };
+
+  const handleMailMenuClose = () => {
+    setMailMenuAnchor(null);
+  };
+
+  const menuItems = [
+    { text: 'Home', path: '/' },
+    { text: 'User List', path: '/userlist' },
+    { text: 'Task Manager', path: '/taskManage' },
+    { text: 'Attendance', path: '/attendanceTracker' },
+    { text: 'Project List', path: '/projectList' },
+  ];
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+      <List>
+        {menuItems.map((item) => (
+          <ListItem key={item.text} component={Link} to={item.path}>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+        <ListItem button onClick={handleMailMenuOpen}>
+          <ListItemText primary="Mail" />
+        </ListItem>
+      </List>
+    </Box>
+  );
+
   return (
-    <nav className="bg-black p-4 h-[100px] flex items-center">
-      <div className="container mx-auto flex justify-between  items-center">
-        <div className="text-white text-2xl font-bold">
-          <Link to="/">Admin Dashboard</Link>
-        </div>
-
-        {/* Hamburger icon */}
-        <div className="block lg:hidden">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="text-gray-200 focus:outline-none"
+    <StyledAppBar position="static">
+      <StyledToolbar>
+        <Typography variant="h6" component={Link} to="/" sx={{ textDecoration: 'none', color: 'inherit' }}>
+          Admin Dashboard
+        </Typography>
+        <DesktopMenu>
+          {menuItems.map((item) => (
+            <Button key={item.text} color="inherit" component={Link} to={item.path}>
+              {item.text}
+            </Button>
+          ))}
+          <Button
+            color="inherit"
+            onClick={handleMailMenuOpen}
+            aria-controls="mail-menu"
+            aria-haspopup="true"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
-            </svg>
-          </button>
-        </div>
-
-        {/* Links */}
-        <div
-          className={`${
-            isOpen ? 'block' : 'hidden'
-          } w-full lg:flex lg:items-center lg:w-auto`}
+            Mail
+          </Button>
+        </DesktopMenu>
+        <MobileMenuButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
         >
-          <ul className="lg:flex lg:space-x-4">
-            <li>
-              <Link
-                to="/"
-                className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/userlist"
-                className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block"
-              >
-                User List
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/taskManage"
-                className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block"
-              >
-                Task Manager
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/attendanceTracker"
-                className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block"
-              >
-                Attendance
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/projectList"
-                className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block"
-              >
-                Project List
-              </Link>
-            </li>
-            <li
-      className="relative group"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-    >
-      <span className="block text-gray-200 hover:text-white px-4 py-2 lg:inline-block cursor-pointer">
-        Mail
-      </span>
-
-      {isOpen && (
-        <div className="absolute -left-24 bg-gray-700 text-gray-200 py-2 rounded-lg shadow-lg w-40">
-          <Link
-            to="/receiveMail"
-            className="block px-4 py-2 hover:bg-gray-600 hover:text-white"
-          >
-            Check Mail
-          </Link>
-          <Link
-            to="/sendMail"
-            className="block px-4 py-2 hover:bg-gray-600 hover:text-white"
-          >
-            Send Mail
-          </Link>
-        </div>
-      )}
-    </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+          <MenuIcon />
+        </MobileMenuButton>
+      </StyledToolbar>
+      <Drawer
+        variant="temporary"
+        anchor="right"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
+      >
+        {drawer}
+      </Drawer>
+      <Menu
+        id="mail-menu"
+        anchorEl={mailMenuAnchor}
+        keepMounted
+        open={Boolean(mailMenuAnchor)}
+        onClose={handleMailMenuClose}
+      >
+        <MenuItem component={Link} to="/receiveMail" onClick={handleMailMenuClose}>
+          Check Mail
+        </MenuItem>
+        <MenuItem component={Link} to="/sendMail" onClick={handleMailMenuClose}>
+          Send Mail
+        </MenuItem>
+      </Menu>
+    </StyledAppBar>
   );
 };
 

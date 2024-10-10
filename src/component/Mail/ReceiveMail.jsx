@@ -1,217 +1,257 @@
 import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Collapse,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
+} from '@mui/material';
+import {
+  Delete as DeleteIcon,
+  Reply as ReplyIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+} from '@mui/icons-material';
+import { styled } from '@mui/system';
 
-const ReceiveMail = () => {
-    const [mails, setMails] = useState([]);
-    const [replyIndex, setReplyIndex] = useState(null); // Track which reply box is opened
-    const [reply, setReply] = useState('');
-    const[users,setUsers]= useState([])
-    let confrimedUSer = ''
-    const fetchEmail = async () => {
-        try {
-            const response = await fetch('/messages/getMessages', {
-                method: 'GET',
-            });
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+}));
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch emails');
-            }
+export default function ReceiveMail() {
+  const [mails, setMails] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [reply, setReply] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-            const data = await response.json();
-            setMails(data);
-        } catch (error) {
-            console.error('Error fetching emails:', error);
-        }
-    };
-
-    const fetchUsers = async()=>{
-        try {
-            const response = await fetch('/users', {
-                method: 'GET',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }   
-            const data= await response.json();
-            setUsers(data);
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
+  const fetchEmail = async () => {
+    try {
+      const response = await fetch('/messages/getMessages', { method: 'GET' });
+      if (!response.ok) throw new Error('Failed to fetch emails');
+      const data = await response.json();
+      setMails(data);
+    } catch (error) {
+      console.error('Error fetching emails:', error);
+      showSnackbar('Error fetching emails');
     }
+  };
 
-    const handleDelete = async () => {
-        try {
-            const response = await fetch('/messages/deleteAll', {
-                method: 'DELETE',
-            });
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/users', { method: 'GET' });
+      if (!response.ok) throw new Error('Failed to fetch users');
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      showSnackbar('Error fetching users');
+    }
+  };
 
-            if (!response.ok) {
-                throw new Error('Failed to delete emails');
-            }
+  const handleDeleteAll = async () => {
+    try {
+      const response = await fetch('/messages/deleteAll', { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete emails');
+      setMails([]);
+      showSnackbar('All messages deleted successfully');
+    } catch (error) {
+      console.error('Error deleting emails:', error);
+      showSnackbar('Error deleting emails');
+    }
+    setDeleteDialogOpen(false);
+  };
 
-            setMails([]); // Clear mails after deletion
-            alert('All messages deleted successfully');
-        } catch (error) {
-            console.error('Error deleting emails:', error);
-        }
+  const handleReply = async (mail, empUsername) => {
+    if (reply.trim() === '') return;
+    const replyData = {
+      sender_email: 'parameshp@innotech.co',
+      receiver_username: empUsername,
+      messages: [reply],
     };
+    try {
+      const response = await fetch('/messages/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(replyData),
+      });
+      if (!response.ok) throw new Error('Failed to reply');
+      showSnackbar('Message sent successfully');
+      setReply('');
+      setExpandedRow(null);
+    } catch (error) {
+      console.error('Error replying:', error);
+      showSnackbar('Error sending reply');
+    }
+  };
 
-    const handleReply = async (mail,empUsername) => {
-        // Send reply if the reply text is not empty
-        if (reply.trim() === '') return;
-        const username = empUsername;
-        const replyData = {
-            sender_email: 'parameshp@innotech.co',
-           receiver_username: username,
-           messages: [reply],
-        };
-        try {
-            const response = await fetch('/messages/sendMessage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(replyData),
-            });
+  const handleDeleteOne = async (id) => {
+    try {
+      const response = await fetch(`/messages/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete email');
+      setMails((prevMails) => prevMails.filter((mail) => mail._id !== id));
+      showSnackbar('Message deleted successfully');
+    } catch (error) {
+      console.error('Error deleting email:', error);
+      showSnackbar('Error deleting email');
+    }
+  };
 
-            if (!response.ok) {
-                throw new Error('Failed to reply');
-            }
-            const data = await response.json();
-            alert('Message sent successfully');
-            setReply(''); // Clear the reply input after sending
-            setReplyIndex(null); // Close the reply box
-        } catch (error) {
-            console.error('Error replying:', error);
-        }
+  const showSnackbar = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  useEffect(() => {
+    fetchEmail();
+    fetchUsers();
+  }, []);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
     };
+    return date.toLocaleDateString('en-US', options);
+  };
 
-    const handleDeleteOne = async (id) => {
-        try {
-            const response = await fetch(`/messages/${id}`, {
-                method: 'DELETE',
-            });
-    
-            // Check for response status before parsing JSON
-            if (!response.ok) {
-                throw new Error('Failed to delete email');
-            }
-    
-            const data = await response.json(); // Parse JSON after checking response
-    
-            // Only update mails if the response is successful
-            setMails((prevMails) => prevMails.filter((mail) => mail._id !== id));
-            
-            // Alert after the state update
-            alert('Message deleted successfully');
-        } catch (error) {
-            console.error('Error deleting email:', error);
-            alert('Error deleting email: ' + error.message); // Optional: Show error message to user
-        }
-    };
-    
-
-    useEffect(() => {
-        fetchEmail();
-        fetchUsers();
-    }, [mails]);
-
-    return (
-        <div className="container mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4">Inbox</h1>
-            <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md mb-4"
-                onClick={handleDelete}
-            >
-                Delete All Messages
-            </button>
-            {mails.length > 0 ? (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="py-2 px-4 border-b">Sender</th>
-                                
-                                <th className="py-2 px-4 border-b">Message</th>
-                                <th className="py-2 px-4 border-b">Received at</th>
-
-                                <th className="py-2 px-4 border-b">Actions</th>
-                                <th className="py-2 px-4 border-b"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {mails.map((mail, index) => 
-                            {
-                                const verifiedUsers = users.find((user) => user.email === mail.sender_email);
-                                
-                                {/* setReceiver(verifiedUsers.username); */}
-                            return(
-                                <tr key={index} className="hover:bg-gray-50">
-                                    <td className="py-2 px-4 border-b">{mail.sender_email}</td>
-                                    {/* <td  className="py-2 px-4 border-b">{verifiedUsers?.username} <p></p></td> */}
-                                    <td className="py-2 px-4 border-b">
-                                        {mail.messages.length > 0 ? mail.messages[0] : "No message"}
-                                    </td>
-                                    <td>
-                                        {
-                                            (
-                                                () => {
-                                                    const date = new Date(mail.createdAt);
-      const options = {
-        timeZone: 'Asia/Kolkata', 
-        year: 'numeric', 
-        month: '2-digit', 
-        day: '2-digit',
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit'
-      };
-      return date.toLocaleDateString('en-US', options) 
-                                                }
-                                            )()
-                                        }
-                                    </td>
-                                    <td className="py-2 px-4 border-b">
-                                        <button
-                                            onClick={() => setReplyIndex(replyIndex === index ? null : index)}
-                                            className="text-blue-500 hover:underline"
-                                        >
-                                            Reply
-                                        </button>
-                                        {replyIndex === index && (
-                                            <div>
-                                                <textarea
-                                                    value={reply}
-                                                    onChange={(e) => setReply(e.target.value)}
-                                                    className="border border-gray-300 p-2 mt-2 w-full"
-                                                    placeholder="Enter your reply here"
-                                                ></textarea>
-                                                <button
-                                                    onClick={() => handleReply(mail, verifiedUsers?.username)}
-                                                    className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-md"
-                                                >
-                                                    Send Reply
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td>
-                                        <button onClick={()=>handleDeleteOne(mail._id)}>
-                                            Delete Message
-                                        </button>
-                                    </td>
-                                </tr>
-                            )}
-                            )
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            ) : (
-                <p className="mt-4">No new mails</p>
-            )}
-        </div>
-    );
-};
-
-export default ReceiveMail;
+  return (
+    <Box sx={{ width: '100%', overflow: 'hidden', p: 3 }}>
+      <Typography variant="h4" gutterBottom component="div">
+        Inbox
+      </Typography>
+      <Button
+        variant="contained"
+        color="error"
+        startIcon={<DeleteIcon />}
+        onClick={() => setDeleteDialogOpen(true)}
+        sx={{ mb: 2 }}
+      >
+        Delete All Messages
+      </Button>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="inbox table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Sender</TableCell>
+              <TableCell>Message</TableCell>
+              <TableCell>Received at</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {mails.map((mail, index) => {
+              const verifiedUser = users.find((user) => user.email === mail.sender_email);
+              return (
+                <React.Fragment key={mail._id}>
+                  <StyledTableRow>
+                    <TableCell component="th" scope="row">
+                      {mail.sender_email}
+                    </TableCell>
+                    <TableCell>{mail.messages.length > 0 ? mail.messages[0] : "No message"}</TableCell>
+                    <TableCell>{formatDate(mail.createdAt)}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setExpandedRow(expandedRow === index ? null : index)}
+                      >
+                        {expandedRow === index ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                      </IconButton>
+                      <IconButton aria-label="delete" onClick={() => handleDeleteOne(mail._id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </StyledTableRow>
+                  <TableRow>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
+                      <Collapse in={expandedRow === index} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                          <Typography variant="h6" gutterBottom component="div">
+                            Reply
+                          </Typography>
+                          <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={reply}
+                            onChange={(e) => setReply(e.target.value)}
+                            placeholder="Enter your reply here"
+                            variant="outlined"
+                            sx={{ mb: 2 }}
+                          />
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            endIcon={<ReplyIcon />}
+                            onClick={() => handleReply(mail, verifiedUser?.username)}
+                          >
+                            Send Reply
+                          </Button>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {mails.length === 0 && (
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          No new mails
+        </Typography>
+      )}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Delete all messages?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete all messages? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteAll} color="error" autoFocus>
+            Delete All
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+      />
+    </Box>
+  );
+}

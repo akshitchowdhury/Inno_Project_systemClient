@@ -116,9 +116,8 @@ const Users = () => {
             <TableRow>
               <TableCell>Username</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
               <TableCell>Department</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -127,9 +126,10 @@ const Users = () => {
               <TableRow key={user._id}>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role || 'N/A'}</TableCell>
-                <TableCell>{getStatusChip(user)}</TableCell>
+                {/* <TableCell>{user.role || 'N/A'}</TableCell> */}
+                
                 <TableCell>{user.department || 'N/A'}</TableCell>
+                <TableCell>{getStatusChip(user)}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => handleOpenDialog(user)} color="primary">
                     <VisibilityIcon />
@@ -159,6 +159,7 @@ const Users = () => {
           {selectedUser && (
             <Box>
               <Typography><strong>Username:</strong> {selectedUser.username}</Typography>
+              <Typography><strong>Password:</strong> {selectedUser.password}</Typography>
               <Typography><strong>Email:</strong> {selectedUser.email}</Typography>
               <Typography><strong>Role:</strong> {selectedUser.role || 'N/A'}</Typography>
               <Typography><strong>Employee ID:</strong> {selectedUser.empId}</Typography>
