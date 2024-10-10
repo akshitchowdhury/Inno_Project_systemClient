@@ -1,18 +1,45 @@
-import React, { useEffect, useState } from 'react'
-import i1 from "../assets/aboutBg2.jpg"
-import i2 from "../assets/homeBgif.gif"
-import logo from "../assets/innoLogo2.jpeg"
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Container, 
+  Grid, 
+  Card, 
+  CardMedia, 
+  CardContent, 
+  Button, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Divider,
+  Box
+} from '@mui/material';
+import { styled } from '@mui/system';
+import { Link } from 'react-router-dom';
+import i1 from "../assets/aboutBg2.jpg";
+import i2 from "../assets/homeBgif.gif";
+import logo from "../assets/innoLogo2.jpeg";
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginBottom: theme.spacing(1),
+  width: '100%',
+}));
 
 const Home = () => {
-  const[userList,setUserList] = useState([])
-  const fetchUsers = async()=>{
-    const response = await fetch("/users", {
-      method: "GET"
-    })
-    const data = await response.json();
-    setUserList(data);
-  }
+  const [userList, setUserList] = useState([]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/users", {
+        method: "GET"
+      });
+      const data = await response.json();
+      setUserList(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   const groupedUsers = userList.reduce((acc, user) => {
     if (!acc[user.isPresent]) {
@@ -21,137 +48,133 @@ const Home = () => {
     acc[user.isPresent].push(user.username);
     return acc;
   }, {});
-  useEffect(()=>{
-    fetchUsers()
-  },[userList])
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* <header className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-6 flex items-center justify-between">
-          <img src={logo} alt="Innomatrics Logo" className="h-12 w-auto" />
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-        </div>
-      </header> */}
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* <AppBar position="static">
+        <Toolbar>
+          <img src={logo} alt="Innomatrics Logo" style={{ height: 40, marginRight: 16 }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Admin Dashboard
+          </Typography>
+        </Toolbar>
+      </AppBar> */}
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <img src={i1} alt="About Background" className="w-full h-48 object-cover" />
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Welcome Admin</h2>
-              <p className="text-gray-600">
-                Manage your innovative solutions and cutting-edge technologies from this centralized admin dashboard. 
-                Monitor performance, analyze data, and make informed decisions to drive your business forward.
-              </p>
-            </div>
-          </div>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="140"
+                image={i1}
+                alt="About Background"
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  Welcome Admin
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Manage your innovative solutions and cutting-edge technologies from this centralized admin dashboard. 
+                  Monitor performance, analyze data, and make informed decisions to drive your business forward.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="140"
+                image={i2}
+                alt="Home Background"
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  Quick Actions
+                </Typography>
+                <StyledButton
+                  variant="contained"
+                  color="primary"
+                  component={Link}
+                  to="/taskManage"
+                >
+                  Daily Task Analytics
+                </StyledButton>
+                <StyledButton
+                  variant="contained"
+                  color="secondary"
+                  component={Link}
+                  to="/projectList"
+                >
+                  Manage Projects
+                </StyledButton>
+                <StyledButton
+                  variant="contained"
+                  color="success"
+                  component={Link}
+                  to="/userlist"
+                >
+                  User Management
+                </StyledButton>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  Quick Updates
+                </Typography>
+                <List>
+                  {groupedUsers["Leave"] && groupedUsers["Leave"].length > 0 && (
+                    <>
+                      <ListItem>
+                        <ListItemText
+                          primary="Employees on Leave"
+                          secondary={groupedUsers["Leave"].join(", ")}
+                        />
+                      </ListItem>
+                      <Divider />
+                    </>
+                  )}
+                  {groupedUsers["WFO"] && groupedUsers["WFO"].length > 0 && (
+                    <>
+                      <ListItem>
+                        <ListItemText
+                          primary="Employees Working from Office"
+                          secondary={groupedUsers["WFO"].join(", ")}
+                        />
+                      </ListItem>
+                      <Divider />
+                    </>
+                  )}
+                  {groupedUsers["WFH"] && groupedUsers["WFH"].length > 0 && (
+                    <ListItem>
+                      <ListItemText
+                        primary="Employees Working from Home"
+                        secondary={groupedUsers["WFH"].join(", ")}
+                      />
+                    </ListItem>
+                  )}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
 
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <img src={i2} alt="Home Background" className="w-full h-48 object-cover" />
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-              <ul className="space-y-2">
-              <Link to="/taskManage">
-                <li>
-                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
-                    Daily Task Analytics
-                  </button>
-                </li>
-                </Link>
-                
-                <li>
-                <Link to="/projectList">
-                  <button className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-                    Manage Projects
-                  </button>
-                  </Link>
-                </li>
-                <li>
-                <Link to="/userlist">
-                  <button className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
-                    User Management
-                  </button>
-                  </Link>
-                </li>
-                
-              </ul>
-            </div>
-          </div>
-        </div>
+      <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
+        <Typography variant="body2" color="text.secondary" align="center">
+          © 2024 Random Technologies. All rights reserved.
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
 
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Quick Updates</h2>
-
-          {/* {
-  userList.map((user) => {
-    return (
-      <ul className="space-y-2" key={user.id}>
-        {user.isPresent === "Leave" && (
-          <li className="flex items-center justify-between border-b pb-2">
-            <span className="text-gray-600">Employee on Leave</span>
-            <span className="text-sm text-gray-400">{user.username}</span>
-          </li>
-        )}
-        {user.isPresent === "WFO" && (
-          <li className="flex items-center justify-between border-b pb-2">
-            <span className="text-gray-600">Employees Working from Office</span>
-            <span className="text-sm text-gray-400">{user.username}</span>
-          </li>
-        )}
-        {user.isPresent === "WFH" && (
-          <li className="flex items-center justify-between">
-            <span className="text-gray-600">Employees Working from Home</span>
-            <span className="text-sm text-gray-400">{user.username}</span>
-          </li>
-        )}
-      </ul>
-    );
-  })
-} */}
-<div>
-    <ul className="space-y-2">
-      {/* Employees on Leave */}
-      {groupedUsers["Leave"] && groupedUsers["Leave"].length > 0 && (
-        <li className="flex items-center justify-between border-b pb-2">
-          <span className="text-gray-600">Employees on Leave</span>
-          <span className="text-sm text-gray-400">
-            {groupedUsers["Leave"].join(", ")}
-          </span>
-        </li>
-      )}
-
-      {/* Employees Working from Office */}
-      {groupedUsers["WFO"] && groupedUsers["WFO"].length > 0 && (
-        <li className="flex items-center justify-between border-b pb-2">
-          <span className="text-gray-600">Employees Working from Office</span>
-          <span className="text-sm text-gray-400">
-            {groupedUsers["WFO"].join(", ")}
-          </span>
-        </li>
-      )}
-
-      {/* Employees Working from Home */}
-      {groupedUsers["WFH"] && groupedUsers["WFH"].length > 0 && (
-        <li className="flex items-center justify-between">
-          <span className="text-gray-600">Employees Working from Home</span>
-          <span className="text-sm text-gray-400">
-            {groupedUsers["WFH"].join(", ")}
-          </span>
-        </li>
-      )}
-    </ul>
-  </div>
-          
-        </div>
-      </main>
-
-      <footer className="bg-gray-800 text-white mt-12">
-        <div className="container mx-auto px-4 py-6 text-center">
-          <p>&copy; 2024 Random Technologies. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  )
-}
-
-export default Home
+export default Home;
