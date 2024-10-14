@@ -33,10 +33,12 @@ const Users = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
+  const baseUrl = import.meta.env.VITE_API_URL;
+    
+  
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/users', { method: 'GET' });
+      const response = await fetch(`${baseUrl}/users`, { method: 'GET' });
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       setUserList(data);
@@ -47,7 +49,7 @@ const Users = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/projects/fetchProjects', { method: 'GET' });
+      const response = await fetch(`${baseUrl}/projects/fetchProjects`, { method: 'GET' });
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
       setProjectList(data);
