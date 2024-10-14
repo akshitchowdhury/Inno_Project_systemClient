@@ -8,10 +8,10 @@ const Attendance = () => {
 
   // Create an array for dates 1 to 31
   const dates = Array.from({ length: 31 }, (_, i) => i + 1);
-
+const baseUrl = import.meta.env.VITE_API_URL;
   // Function to fetch users from the API
   const fetchUsers = async () => {
-    const response = await fetch("/users"); // Update with your API endpoint
+    const response = await fetch(`${baseUrl}/users`); // Update with your API endpoint
     const data = await response.json();
     setUserList(data);
   };
