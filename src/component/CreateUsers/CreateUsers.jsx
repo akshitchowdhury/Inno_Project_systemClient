@@ -33,7 +33,7 @@ const CreateUsers = () => {
   const [email, setEmail] = useState('');
   const [department, setDepartment] = useState('');
   const [error, setError] = useState('');
-
+const baseUrl = import.meta.env.VITE_API_URL;
   const handleSubmission = (e) => {
     e.preventDefault();
 
@@ -55,7 +55,7 @@ const CreateUsers = () => {
 
     const submitData = async () => {
       try {
-        const response = await fetch('/users/addUsers', {
+        const response = await fetch(`${baseUrl}/users/addUsers`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
