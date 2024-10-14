@@ -73,7 +73,7 @@ const CreateProjects = () => {
     };
 
     try {
-      const response = await fetch(`projects/addProject`, {
+      const response = await fetch(`${baseUrl}/projects/addProject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(projectData),
