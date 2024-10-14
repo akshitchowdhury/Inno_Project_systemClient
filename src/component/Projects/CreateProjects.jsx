@@ -37,9 +37,10 @@ const CreateProjects = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
+  const baseUrl = import.meta.env.VITE_API_URL;
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/projects/fetchProjects', { method: 'GET' });
+      const response = await fetch(`${baseUrl}/projects/fetchProjects`, { method: 'GET' });
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
       setProjects(data);
@@ -51,7 +52,7 @@ const CreateProjects = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/users", { method: "GET" });
+      const response = await fetch(`${baseUrl}/users`, { method: "GET" });
       const data = await response.json();
       setUserList(data);
     } catch (error) {
@@ -72,7 +73,7 @@ const CreateProjects = () => {
     };
 
     try {
-      const response = await fetch('/projects/addProject', {
+      const response = await fetch(`projects/addProject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(projectData),
@@ -96,7 +97,7 @@ const CreateProjects = () => {
 
   const handleDeletion = async (id) => {
     try {
-      const response = await fetch(`/projects/delProject/${id}`, { method: "DELETE" });
+      const response = await fetch(`${baseUrl}/projects/delProject/${id}`, { method: "DELETE" });
       if (!response.ok) throw new Error('Failed to delete project');
       setProjects(projects.filter((project) => project._id !== id));
       showSnackbar('Project deleted successfully', 'success');
@@ -109,7 +110,7 @@ const CreateProjects = () => {
   const handleStatusToggle = async (id, currentStatus) => {
     const updatedStatus = !currentStatus;
     try {
-      const response = await fetch(`/projects/updateStatus/${id}`, {
+      const response = await fetch(`${baseUrl}/projects/updateStatus/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectStatus: updatedStatus }),

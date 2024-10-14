@@ -30,10 +30,10 @@ const SendMail = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
-
+const baseUrl = import.meta.env.VITE_API_URL;
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/users', { method: 'GET' });
+      const response = await fetch(`${baseUrl}/users`, { method: 'GET' });
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       setUsers(data.filter(user => user.username !== "ADMIN"));
@@ -61,7 +61,7 @@ const SendMail = () => {
     };
 
     try {
-      const sendData = await fetch('/messages/sendMessage', {
+      const sendData = await fetch(`${baseUrl}/messages/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

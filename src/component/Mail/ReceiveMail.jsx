@@ -44,8 +44,9 @@ export default function ReceiveMail() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const fetchEmail = async () => {
+    const baseUrl = import.meta.env.VITE_API_URL;
     try {
-      const response = await fetch('/messages/getMessages', { method: 'GET' });
+      const response = await fetch(`${baseUrl}/messages/getMessages`, { method: 'GET' });
       if (!response.ok) throw new Error('Failed to fetch emails');
       const data = await response.json();
       setMails(data);
@@ -57,7 +58,7 @@ export default function ReceiveMail() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/users', { method: 'GET' });
+      const response = await fetch(`${baseUrl}/users`, { method: 'GET' });
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       setUsers(data);
@@ -69,7 +70,7 @@ export default function ReceiveMail() {
 
   const handleDeleteAll = async () => {
     try {
-      const response = await fetch('/messages/deleteAll', { method: 'DELETE' });
+      const response = await fetch(`${baseUrl}/messages/deleteAll`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete emails');
       setMails([]);
       showSnackbar('All messages deleted successfully');
@@ -88,7 +89,7 @@ export default function ReceiveMail() {
       messages: [reply],
     };
     try {
-      const response = await fetch('/messages/sendMessage', {
+      const response = await fetch(`${baseUrl}/messages/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(replyData),
@@ -105,7 +106,7 @@ export default function ReceiveMail() {
 
   const handleDeleteOne = async (id) => {
     try {
-      const response = await fetch(`/messages/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${baseUrl}/messages/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete email');
       setMails((prevMails) => prevMails.filter((mail) => mail._id !== id));
       showSnackbar('Message deleted successfully');

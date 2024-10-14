@@ -28,10 +28,10 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 const Home = () => {
   const [userList, setUserList] = useState([]);
-
+  const baseUrl = import.meta.env.VITE_API_URL;
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/users", {
+      const response = await fetch(`${baseUrl}/users`, {
         method: "GET"
       });
       const data = await response.json();

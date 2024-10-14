@@ -8,9 +8,10 @@ const ProjectManagement = () => {
 const[taskName,setTaskName] = useState('')
 const [givenProject, setGivenProject] = useState('')
 const[userName,setUserName] = useState('')
+const baseUrl = import.meta.env.VITE_API_URL;
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/projects/fetchProjects', {
+      const response = await fetch(`${baseUrl}/projects/fetchProjects`, {
         method: 'GET',
       });
       if (!response.ok) {
@@ -25,7 +26,7 @@ const[userName,setUserName] = useState('')
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/users', {
+      const response = await fetch(`${baseUrl}/users`, {
         method: 'GET',
       });
       if (!response.ok) {

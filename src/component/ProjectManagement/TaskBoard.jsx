@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 const TaskBoard = () => {
     const [taskList, setTaskList] = useState([]);
     const [users, setUsers] = useState([]);
-
+    const baseUrl = import.meta.env.VITE_API_URL;
     const taskBoardData = async () => {
-        const response = await fetch('/taskBoards/getTasks', {
+        const response = await fetch(`${baseUrl}/taskBoards/getTasks`, {
             method: 'GET',
         });
         const data = await response.json();
@@ -13,7 +13,7 @@ const TaskBoard = () => {
     };
 
     const fetchUsers = async () => {
-        const response = await fetch('/users', {
+        const response = await fetch(`${baseUrl}/users`, {
             method: 'GET',
         });
         const data = await response.json();
@@ -28,7 +28,7 @@ const TaskBoard = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`/taskBoards/${id}`, {
+            const response = await fetch(`${baseUrl}/taskBoards/${id}`, {
                 method: 'DELETE',
             });
 
