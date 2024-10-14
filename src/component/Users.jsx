@@ -60,7 +60,7 @@ const Users = () => {
 
   const handleDeletion = async (id) => {
     try {
-      const response = await fetch(`/users/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${baseUrl}/users/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete user');
       setUserList(userList.filter((user) => user._id !== id));
     } catch (error) {
