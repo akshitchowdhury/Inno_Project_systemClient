@@ -61,6 +61,7 @@ const Attendance = () => {
   };
 
   return (
+    <div className="p-4">
     <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Attendance Calendar</h2>
       <div className="flex justify-between items-center mb-4">
@@ -135,6 +136,7 @@ const Attendance = () => {
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 };

@@ -7,25 +7,27 @@ export default defineConfig({
   server: {
     proxy: {
       '/users': {
-        target: 'http://localhost:3000', 
+        target: 'https://inno-project-system-server.vercel.app/', 
         changeOrigin: true,
         secure: false,
       },
       '/projects': {
-        target: 'http://localhost:3000',
+        target: 'https://inno-project-system-server.vercel.app/',
         changeOrigin: true,
         secure: false,
       },
       '/taskBoards': {
-        target: 'http://localhost:3000',  
+        target: 'https://inno-project-system-server.vercel.app/',  
         changeOrigin: true,
         secure: false,
       },
       '/messages': {
-        target: 'http://localhost:3000',  
+        target: 'https://inno-project-system-server.vercel.app/',  
         changeOrigin: true,
         secure: false,
       },
     },
   },
 })
+
+

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 const ThirtyOne = ({ todayDate,refresh,setRefrsh, monthGrid, options, date }) => {
   
 
-  // Handle deletion of a tile
   
   return (
     <div>
