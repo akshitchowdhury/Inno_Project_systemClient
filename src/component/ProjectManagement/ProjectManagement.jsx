@@ -75,7 +75,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
   
     try {
       // Example: Submitting data to the backend
-      const response = await fetch('/taskBoards/addTask', {
+      const response = await fetch(`${baseUrl}/taskBoards/addTask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
